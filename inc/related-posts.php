@@ -20,13 +20,8 @@ class Related_Posts {
 			return array();
 		}
 
-		$taxonomies = array(
-			'wp-parser-related-words',
-			'wp-parser-package',
-			'wp-parser-source-file',
-		);
-
-		$terms = self::get_terms( $post->ID, $taxonomies );
+		$taxonomies = self::get_taxonomies();
+		$terms      = self::get_terms( $post->ID, $taxonomies );
 		if ( ! $terms ) {
 			return array();
 		}
@@ -156,7 +151,11 @@ class Related_Posts {
 	 * @param array   $taxonomies Taxonomy names.
 	 * @return array Array with term objects.
 	 */
-	private static function get_terms( $post, $taxonomies ) {
+	public static function get_terms( $post, $taxonomies = array() ) {
+
+		if ( ! $taxonomies ) {
+			$taxonomies = self::get_taxonomies();
+		}
 
 		$terms = wp_get_object_terms( $post, $taxonomies );
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
@@ -186,6 +185,14 @@ class Related_Posts {
 			}
 		}
 		return array_values( $terms );
+	}
+
+	public static function get_taxonomies() {
+		return array(
+			'wp-parser-related-words',
+			'wp-parser-package',
+			'wp-parser-source-file',
+		);
 	}
 
 	/**
