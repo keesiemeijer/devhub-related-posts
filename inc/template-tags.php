@@ -46,7 +46,7 @@ function display_related_posts( $post = null ) {
 	$related_posts = Related_Posts::get_posts( $post );
 
 	if ( $related_posts ) {
-		$count = count($related_posts);
+		$count = count( $related_posts );
 		foreach ( (array) $related_posts as $related ) {
 			$html .= '<li><a href="' . get_permalink( $related->ID ) . '">';
 			$html .= $related->post_title . '</a>';
@@ -80,10 +80,23 @@ function display_table_related_terms_used() {
 		$types[ $tax ] .= ', ' . $term->name;
 		$types[ $tax ] = trim( $types[ $tax ], ', ' );
 	}
-
-	echo "<p>Terms found</p>";
+	echo "<p>Related terms found for this post</p>";
 	echo '<table><thead><th>Taxonomy</th><th>Terms</th></thead><tbody>';
 	echo "<tbody><tr><td>wp-parser-related-words</td><td>{$types['words']}</td></tr>";
 	echo "<tr><td>wp-parser-package</td><td>{$types['package']}</td></tr>";
 	echo "<tr><td>wp-parser-source-file</td><td>{$types['file']}</td></tr></tbody></table>";
+
+	$terms_used = Related_Posts::get_terms( $post->ID, $taxonomies );
+	if ( ! $terms_used ) {
+		return;
+	}
+
+	echo "<h3>Terms Used</h3>";
+	echo "<p>Terms used in the related posts query</p>";
+	echo "<ul>";
+	foreach ( $terms_used as $used ) {
+		echo '<li>' . $used->name . '</li>';
+	}
+	echo "</ul>";
+
 }

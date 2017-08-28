@@ -134,19 +134,16 @@ function get_wp_words( $words ) {
 /**
  * Match two titles and return score based on similarities.
  *
+ * Todo: make matching less greedy.
+ *
  * @param  string $title1 Title.
  * @param  string $title2 Title to match similarities.
  * @return int    Greater than 0 if similarity found. 0 for no similarities.
  */
 function get_title_match_score( $title1, $title2 ) {
 	$score      = 0;
-	$restricted = get_restricted_words();
 	$words      = get_words( $title1 );
 	foreach ( $words as $word ) {
-		if ( in_array( $word, $restricted ) ) {
-			continue;
-		}
-
 		if ( $word && (false !== strpos( $title2, $word )) ) {
 			$score = $score + 0.1;
 		}
