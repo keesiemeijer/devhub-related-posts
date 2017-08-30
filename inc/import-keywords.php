@@ -40,6 +40,13 @@ function set_related_object_terms( $post_id = 0, $post_data = array() ) {
 	$source_file = isset( $source_file[0] ) ? esc_html( $source_file[0] ) : '';
 
 	if ( $source_file ) {
+		if ( 0 === strpos( $source_file, 'wp-admin' ) ) {
+			$words[] = 'wp-admin';
+		}
+
+		if ( 0 === strpos( $source_file, 'wp-includes' ) ) {
+			$words[] = 'wp-includes';
+		}
 		// Add the filename to the related words.
 		$file_parts = pathinfo( $source_file );
 		$file_name  = sanitize_title( $file_parts['basename'] );

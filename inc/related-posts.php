@@ -83,7 +83,7 @@ class Related_Posts {
 				$temp_count = $post->termcount;
 			}
 
-			$related = ( $post->termcount > 2 ) && ( $step_count <= 3  );
+			$related = ( $post->termcount > 2 ) && ( $step_count <= 4  );
 			if ( $related ) {
 				$title_score = get_title_match_score( $post_title, $post->post_title );
 				$post->termcount += $title_score;

@@ -28,6 +28,11 @@ require __DIR__ . '/inc/porterstemmer.php';
 /**
  * Title keywords algorithm.
  */
+require __DIR__ . '/inc/synonyms.php';
+
+/**
+ * Title keywords algorithm.
+ */
 require __DIR__ . '/inc/title-keywords.php';
 
 /**

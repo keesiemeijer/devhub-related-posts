@@ -73,8 +73,10 @@ function get_title_keywords( $title ) {
 	// Stem words.
 	$stemmed_words = array_map( __NAMESPACE__ . '\\PorterStemmer::Stem', $words );
 
+	$synonyms = get_synonym_words( $words );
+
 	// Merge all words.
-	$words = array_merge( $words, $wp_words, $stemmed_words );
+	$words = array_merge( $words, $wp_words, $stemmed_words, $synonyms );
 
 	return array_values( array_filter( array_unique( $words ) ) );
 }
@@ -128,7 +130,54 @@ function get_wp_words( $words ) {
 		$wp_words[] = PorterStemmer::Stem( $words[ $key + 1 ] );
 	}
 
-	return array_values( array_unique( $wp_words ) );
+	return array_values( array_filter( array_unique( $wp_words ) ) );
+}
+
+function get_synonym_words( $words ) {
+
+	$abbreviations = get_abbreviations();
+	$similar       = get_similar_words();
+	$synonym_words = array();
+
+	// Expand abbreviations.
+	foreach ( $words as $word ) {
+		if ( array_key_exists( $word, $abbreviations ) ) {
+			$synonym_words[] = $abbreviations[ $word ];
+		}
+	}
+
+	$words = array_unique( array_merge( $words, $synonym_words ) );
+
+	// Get similar words.
+	foreach ( $words as $word ) {
+		if ( in_array( $word, array_values( $similar ) ) ) {
+			$key = array_search( $word, $similar );
+			if ( $key ) {
+				$synonym_words[] = $key;
+			}
+		}
+
+		if ( array_key_exists( $word, $similar ) ) {
+			$synonym_words[] = $similar[ $word ];
+		}
+	}
+
+	$words = array_unique( array_merge( $words, $synonym_words ) );
+
+	// Get synonyms.
+	foreach ( $words as $word ) {
+		foreach ( get_synonyms() as $key => $synonyms ) {
+			if ( in_array( $word, $synonyms ) ) {
+				$synonym_words[] = $key;
+			}
+		}
+	}
+
+	$stemmed_words = array_map( __NAMESPACE__ . '\\PorterStemmer::Stem', $synonym_words );
+	$synonym_words = array_merge( $synonym_words, $stemmed_words );
+	$synonym_words = array_filter( array_unique( $synonym_words ) );
+
+	return array_values( $synonym_words );
 }
 
 /**
@@ -136,15 +185,15 @@ function get_wp_words( $words ) {
  *
  * Todo: make matching less greedy.
  *
- * @param  string $title1 Title.
- * @param  string $title2 Title to match similarities.
+ * @param string $title1 Title.
+ * @param string $title2 Title to match similarities.
  * @return int    Greater than 0 if similarity found. 0 for no similarities.
  */
 function get_title_match_score( $title1, $title2 ) {
 	$score      = 0;
 	$words      = get_words( $title1 );
 	foreach ( $words as $word ) {
-		if ( $word && (false !== strpos( $title2, $word )) ) {
+		if ( $word && ( false !== strpos( $title2, $word ) ) ) {
 			$score = $score + 0.1;
 		}
 	}

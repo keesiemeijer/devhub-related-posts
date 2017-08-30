@@ -70,6 +70,8 @@ function display_table_related_terms_used() {
 	global $post;
 
 	$post_type     = $post->post_type;
+	$words = get_title_keywords( $post->post_title );
+
 	$taxonomies    = array( 'wp-parser-related-words', 'wp-parser-package', 'wp-parser-source-file' );
 	$related_terms = wp_get_object_terms( $post->ID, array_map( 'trim', (array) $taxonomies ) );
 	$types         = array( 'words' => '', 'package' => '', 'file' => '' );
