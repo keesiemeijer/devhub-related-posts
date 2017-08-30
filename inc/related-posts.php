@@ -167,6 +167,32 @@ class Related_Posts {
 			return array();
 		}
 
+		$term_ids      = wp_list_pluck( $terms, 'term_id' );
+		$package_terms = array();
+
+		foreach ( $terms as $term ) {
+			if ( 'wp-parser-package' !== $term->taxonomy ) {
+				continue;
+			}
+
+			$args = array(
+				'taxonomy'   => 'wp-parser-related-words',
+				'name'       => strtolower( $term->name ),
+			);
+
+			$similar_terms = get_terms( $args );
+			if ( is_wp_error( $similar_terms ) || empty( $similar_terms ) ) {
+				continue;
+			}
+
+			foreach ( $similar_terms as $similar_term ) {
+				if ( ! in_array( $similar_term->term_id, $term_ids ) ) {
+					$package_terms[] = $similar_term;
+				}
+			}
+		}
+
+		$terms = array_merge( $terms, $package_terms );
 		return array_values( $terms );
 	}
 

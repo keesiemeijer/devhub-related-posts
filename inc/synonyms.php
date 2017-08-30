@@ -305,5 +305,8 @@ function get_similar_words() {
 		'category'   => 'categories',
 		'plugin'     => 'plugins',
 		'setting'    => 'settings',
+		'option'     => 'options',
+		'widget'     => 'widgets',
+		'shortcode'  => 'shortcodes',
 	);
 }
